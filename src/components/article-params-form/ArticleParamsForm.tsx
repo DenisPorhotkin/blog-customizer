@@ -3,11 +3,11 @@ import clsx from 'clsx';
 
 import { ArrowButton } from '../../ui/arrow-button';
 import { Button } from '../../ui/button';
-
+import { Text } from 'src/ui/text';
 import { Select } from '../../ui/select';
 import { RadioGroup } from '../../ui/radio-group';
 import { Separator } from '../../ui/separator';
-import { useOutsideClickClose } from '../../ui/select/hooks/useOutsideClickClose';
+import { useClose } from '../../ui/select/hooks/useClose';
 import {
 	fontFamilyOptions,
 	fontSizeOptions,
@@ -31,32 +31,31 @@ export const ArticleParamsForm = ({
 	onApply,
 	onReset,
 }: ArticleParamsFormProps) => {
-	const [isOpen, setIsOpen] = useState(false);
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [formState, setFormState] = useState(currentState);
 	const formRef = useRef<HTMLDivElement>(null);
 
 	// Закрытие при клике вне формы
-	useOutsideClickClose({
-		isOpen,
+	useClose({
+		isOpen: isMenuOpen,
 		rootRef: formRef,
-		onChange: setIsOpen,
-		onClose: () => setIsOpen(false),
+		onClose: () => setIsMenuOpen(false),
 	});
 
 	const handleArrowClick = () => {
-		setIsOpen(!isOpen);
+		setIsMenuOpen(!isMenuOpen);
 	};
 
 	const handleFormSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		onApply(formState);
-		setIsOpen(false);
+		setIsMenuOpen(false);
 	};
 
 	const handleFormReset = () => {
 		setFormState(defaultArticleState);
 		onReset();
-		setIsOpen(false);
+		setIsMenuOpen(false);
 	};
 
 	const handleFontFamilyChange = (option: (typeof fontFamilyOptions)[0]) => {
@@ -83,12 +82,16 @@ export const ArticleParamsForm = ({
 
 	return (
 		<>
-			<ArrowButton isOpen={isOpen} onClick={handleArrowClick} />
+			<ArrowButton isOpen={isMenuOpen} onClick={handleArrowClick} />
 			<aside
-				className={clsx(styles.container, { [styles.container_open]: isOpen })}
+				className={clsx(styles.container, {
+					[styles.container_open]: isMenuOpen,
+				})}
 				ref={formRef}>
 				<form className={styles.form} onSubmit={handleFormSubmit}>
-					<h2 className={styles.title}>Задайте параметры</h2>
+					<Text as='h2' size={31} weight={800} uppercase dynamicLite>
+						Задайте параметры
+					</Text>
 					<Separator />
 					<Select
 						title='Шрифт'
